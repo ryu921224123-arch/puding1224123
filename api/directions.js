@@ -1,10 +1,6 @@
 export default async function handler(req, res) {
   const { start, goal } = req.query;
 
-  if (!start || !goal) {
-    return res.status(400).json({ error: 'start and goal required' });
-  }
-
   const response = await fetch(
     `https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving?start=${start}&goal=${goal}`,
     {
@@ -16,5 +12,14 @@ export default async function handler(req, res) {
   );
 
   const data = await response.json();
-  res.status(200).json(data);
+
+  const route = data.route?.traoptimal?.[0];
+  if (!route) {
+    return res.status(500).json({ error: '경로 계산 실패' });
+  }
+
+  res.status(200).json({
+    distance: route.summary.distance, // m
+    duration: route.summary.duration, // ms
+  });
 }
