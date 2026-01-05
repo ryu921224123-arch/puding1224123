@@ -1,25 +1,6 @@
-export default async function handler(req, res) {
-  const { start, goal } = req.query;
-
-  const response = await fetch(
-    `https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving?start=${start}&goal=${goal}`,
-    {
-      headers: {
-        'X-NCP-APIGW-API-KEY-ID': process.env.NAVER_MAP_CLIENT_ID,
-        'X-NCP-APIGW-API-KEY': process.env.NAVER_MAP_CLIENT_SECRET,
-      },
-    }
-  );
-
-  const data = await response.json();
-
-  const route = data.route?.traoptimal?.[0];
-  if (!route) {
-    return res.status(500).json({ error: '경로 계산 실패' });
-  }
-
+export default function handler(req, res) {
   res.status(200).json({
-    distance: route.summary.distance, // m
-    duration: route.summary.duration, // ms
+    ok: true,
+    message: 'directions api connected'
   });
 }
