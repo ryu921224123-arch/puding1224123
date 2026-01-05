@@ -1,10 +1,6 @@
 export default async function handler(req, res) {
   const { address } = req.query;
 
-  if (!address) {
-    return res.status(400).json({ error: 'address required' });
-  }
-
   const response = await fetch(
     `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`,
     {
@@ -16,5 +12,11 @@ export default async function handler(req, res) {
   );
 
   const data = await response.json();
-  res.status(200).json(data);
+
+  if (!data.addresses || data.addresses.length === 0) {
+    return res.status(404).json({ error: '주소 없음' });
+  }
+
+  const { x, y } = data.addresses[0]; // x=경도, y=위도
+  res.status(200).json({ lng: x, lat: y });
 }
